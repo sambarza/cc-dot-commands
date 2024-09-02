@@ -1,59 +1,48 @@
-import time
-from cat.mad_hatter.decorators import tool, hook
+from cat.mad_hatter.decorators import hook
 from cat.looking_glass.cheshire_cat import CheshireCat
-
-original_user_message_json = ""
+from cat.convo.messages import Role
 
 
 @hook
 def agent_fast_reply(fast_reply, cat: CheshireCat):
     """Use this hook to reply fast to the user"""
 
-    if cat.working_memory["user_message_json"]["text"] == ".p":
+    # Not a dot command
+    if cat.working_memory.user_message_json.text[0] != ".":
+        return
+
+    if cat.working_memory.user_message_json.text == ".p":
 
         return formatted_chat_history(cat)
 
-    if cat.working_memory["user_message_json"]["text"] == ".cc":
+    if cat.working_memory.user_message_json.text == ".cc":
 
         cat.working_memory.episodic_memories.clear()
-        cat.working_memory["history"].clear()
+        cat.working_memory.history.clear()
 
         return {"output": "Ok I have forgotten everything"}
 
-    if cat.working_memory["user_message_json"]["text"] == ".lp":
+    if cat.working_memory.user_message_json.text == ".lp":
 
         return {"output": cat.working_memory.last_used_prompt}
 
-    if cat.working_memory["user_message_json"]["text"] == ".rl":
-        cat.working_memory.remove_last_turn()
+    if cat.working_memory.user_message_json.text == ".rl":
+        cat.working_memory.history = memory_remove_last_turn(cat.working_memory.history)
         return {"output": "Ok I have removed the last turn"}
 
-    if cat.working_memory["user_message_json"]["text"][:2] == ".k":
-        turns_to_keep = int(
-            cat.working_memory["user_message_json"]["text"].split(" ")[1]
-        )
+    if cat.working_memory.user_message_json.text[:2] == ".k":
+        turns_to_keep = int(cat.working_memory.user_message_json.text.split(" ")[1])
 
         if turns_to_keep % 2 != 0:
             return {"output": f"{turns_to_keep} is HUMAN turn, specify an AI turn"}
 
-        cat.working_memory.keep_up_to_turn(turns_to_keep)
+        cat.working_memory.history = memory_keep_up_to_turn(
+            cat.working_memory.history, turns_to_keep
+        )
 
         return formatted_chat_history(cat)
 
-    if "original_text" in cat.working_memory["user_message_json"].keys():
-
-        original_user_message_text = cat.working_memory["user_message_json"][
-            "original_text"
-        ]
-
-        if original_user_message_text[:2] == ".r":
-
-            # Remove the original message
-            del cat.working_memory["user_message_json"]["original_text"]
-
-            return None
-
-    if cat.working_memory["user_message_json"]["text"] == ".":
+    if cat.working_memory.user_message_json.text == ".":
 
         commands = """
       Dot Commands:
@@ -73,18 +62,17 @@ def agent_fast_reply(fast_reply, cat: CheshireCat):
 
 def formatted_chat_history(cat):
 
-    if len(cat.working_memory["history"]) == 0:
+    # 2 because memory history already contains the dot command
+    if len(cat.working_memory.history) < 2:
         return {"output": "Chat history is empty"}
 
     history = ""
 
     turn_number = 0
-    for turn in cat.working_memory["history"]:
+    for turn in cat.working_memory.history[0:-1]:
         turn_number += 1
 
-        history += (
-            f"\n *{str(turn_number).zfill(3)}* - {turn['who']}: {turn['message']}"
-        )
+        history += f"\n *{str(turn_number).zfill(3)}* {turn['who']}: {turn['message']}"
 
     return {"output": history}
 
@@ -92,35 +80,58 @@ def formatted_chat_history(cat):
 @hook
 def before_cat_reads_message(user_message_json, cat: CheshireCat):
 
-    # Remove dot commands in history
-    if cat.working_memory["history"][-2]["message"][0] == ".":
-        cat.working_memory["history"] = cat.working_memory["history"][:-2]
+    cleaned_history = []
 
-    # Exit if not resend command
-    if not user_message_json["text"][:2] == ".r":
+    # Remove all the dot commands questions and answer
+    for turn in cat.working_memory.history:
+
+        if turn["role"] == Role.AI:
+            if turn["why"].input[0] == ".":
+                continue
+
+        if turn["role"] == Role.Human:
+            if turn["message"][0] == ".":
+                continue
+
+        cleaned_history.append(turn)
+
+    cat.working_memory.history = cleaned_history
+
+    # Exit if the prompt is not a resend command
+    if not user_message_json.text[:2] == ".r":
         return
 
-    # Keep the original message, will be used in hook agent_fast_reply
-    user_message_json["original_text"] = user_message_json["text"]
-
-    # Answer to resend has been specified?
-    if len(user_message_json["text"].split(" ")) > 1:
-        # Answer to resend has been specified
-        turn_to_resend = int(user_message_json["text"].split(" ")[1])
+    # Question to resend has been specified?
+    if len(user_message_json.text.split(" ")) > 1:
+        # Question to resend has been specified
+        question_to_resend = int(user_message_json.text.split(" ")[1])
     else:
-        # Answer to resend has not been specified, resend the last answer
-        turn_to_resend = int(len(cat.working_memory["history"]) - 1)
+        # Question to resend has not been specified, resend the last answer
+        question_to_resend = int(len(cat.working_memory.history) - 1)
+
+    # The question index is 0 based however the user ask for question 1 based
+    index_of_question_to_resend = question_to_resend - 1
+
+    # Get the question text
+    question = cat.working_memory.history[index_of_question_to_resend]["message"]
 
     # Keep the history up to the answer to resend
-    turns_to_keep = turn_to_resend - 1
+    turns_to_keep = index_of_question_to_resend
 
-    # Get the question
-    question = cat.working_memory["history"][turn_to_resend - 1]["message"]
-
-    # Keep the history up to the answer to resend
-    cat.working_memory.keep_up_to_turn(turns_to_keep)
+    # Keep the history up to the question to resend
+    cat.working_memory.history = memory_keep_up_to_turn(
+        cat.working_memory.history, turns_to_keep
+    )
 
     # Replace the question
-    user_message_json["text"] = question
+    user_message_json.text = question
 
     return user_message_json
+
+
+def memory_remove_last_turn(history):
+    return history[0:-2]
+
+
+def memory_keep_up_to_turn(history, turns_to_keep):
+    return history[0:turns_to_keep]
