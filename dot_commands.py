@@ -62,6 +62,9 @@ def agent_fast_reply(fast_reply, cat):
 
         return {"output": output}
 
+    if cat.working_memory.user_message_json.text == ".whoami":
+        return {"output": str(cat.user_id)}
+
     if cat.working_memory.user_message_json.text == ".":
 
         commands = """
@@ -76,6 +79,7 @@ def agent_fast_reply(fast_reply, cat):
       [.rl]    - Remove Last turn
       [.lp]    - Print Last Sent Prompt
       [.sl]    - Print active sessions summary
+      [.whoami] - Print current user
       """
 
         return {"output": commands}
@@ -99,7 +103,7 @@ def formatted_chat_history(cat):
 
 
 @hook
-def before_cat_reads_message(user_message_json, cat: CheshireCat):
+def before_cat_reads_message(user_message_json, cat):
 
     cleaned_history = []
 
