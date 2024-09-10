@@ -1,10 +1,9 @@
 from cat.mad_hatter.decorators import hook
-from cat.looking_glass.cheshire_cat import CheshireCat
 from cat.convo.messages import Role
 
 
 @hook
-def agent_fast_reply(fast_reply, cat: CheshireCat):
+def agent_fast_reply(fast_reply, cat):
     """Use this hook to reply fast to the user"""
 
     # Not a dot command
