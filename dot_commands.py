@@ -41,6 +41,27 @@ def agent_fast_reply(fast_reply, cat):
 
         return formatted_chat_history(cat)
 
+    if cat.working_memory.user_message_json.text == ".sl":
+        active_sessions = {}
+
+        active_sessions["count"] = len(cat._StrayCat__ws.app.state.strays)
+        active_sessions["sessions"] = []
+
+        for session_id, stray_cat in cat._StrayCat__ws.app.state.strays.items():
+            session = {}
+
+            session["session_id"] = session_id
+            session["user"] = stray_cat.user_id
+            session["history_length"] = len(stray_cat.working_memory.history)
+
+            active_sessions["sessions"].append(session)
+
+        output = f"Active sessions: {active_sessions['count']}"
+        for session in active_sessions["sessions"]:
+            output += "\n" + str(session)
+
+        return {"output": output}
+
     if cat.working_memory.user_message_json.text == ".":
 
         commands = """
@@ -54,6 +75,7 @@ def agent_fast_reply(fast_reply, cat):
       [.l]     - Load Chat history (not implemented)
       [.rl]    - Remove Last turn
       [.lp]    - Print Last Sent Prompt
+      [.sl]    - Print active sessions summary
       """
 
         return {"output": commands}
