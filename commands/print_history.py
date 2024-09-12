@@ -1,11 +1,7 @@
 from cat.looking_glass.stray_cat import StrayCat
 
 
-def print_history(cat):
-    return formatted_chat_history(cat)
-
-
-def formatted_chat_history(cat: StrayCat):
+def print_history(cat: StrayCat):
 
     # 2 because memory history already contains the dot command
     if len(cat.working_memory.history) < 2:
