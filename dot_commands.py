@@ -263,6 +263,10 @@ Question was:
 
         return {"output": commands}
 
+    return {
+        "output": f"Unknown dot command `'{cat.working_memory.user_message_json.text}'`"
+    }
+
 
 def formatted_chat_history(cat: StrayCat):
 
