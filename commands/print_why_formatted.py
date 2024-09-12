@@ -69,6 +69,6 @@ Last question was:
 ```text
 Answer was:
 ```
-{cat.working_memory.history[-2].message}
+{cat.working_memory.history[-2]["message"]}
 """
     }

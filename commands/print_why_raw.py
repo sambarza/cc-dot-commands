@@ -27,9 +27,9 @@ def print_why_raw(cat: StrayCat):
 
     return {
         "output": f"""
-Question was:
+Answer was:
 ```text
-{last_why.input}
+{cat.working_memory.history[-2]["message"]}
 ```
 """
     }
