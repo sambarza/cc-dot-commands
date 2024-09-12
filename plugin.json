@@ -1,6 +1,6 @@
 {
     "name": "Dot Commands",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Handy utility designed to simplify and speed up your plugin development process",
     "author_name": "sambarza@gmail.com",
     "plugin_url": "https://github.com/sambarza/cc-dot-commands",
