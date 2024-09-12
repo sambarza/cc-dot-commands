@@ -356,7 +356,7 @@ Resending...
 
 
 def memory_remove_last_turn(history):
-    return history[0:-2]
+    return history[0:-3]
 
 
 def memory_keep_up_to_turn(history, turns_to_keep):
