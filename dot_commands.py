@@ -45,7 +45,7 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
     if cat.working_memory.user_message_json.text == ".rt":
         return remove_last_turn(cat)
 
-    # Print active sessione
+    # Print active sessions
     if cat.working_memory.user_message_json.text == ".as":
         return print_active_sessions(cat)
 
