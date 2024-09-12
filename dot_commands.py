@@ -25,21 +25,20 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
 
         return {"output": "Ok I have forgotten everything"}
 
+    if cat.working_memory.user_message_json.text[0:3] == ".ch":
+
+        remove_after = int(cat.working_memory.user_message_json.text.split(" ")[1])
+
+        cat.working_memory.episodic_memories = cat.working_memory.episodic_memories[
+            0:remove_after
+        ]
+        cat.working_memory.history = cat.working_memory.history[0:remove_after]
+
+        return {"output": f"Ok I have forgotten everything after {remove_after}"}
+
     if cat.working_memory.user_message_json.text == ".rt":
         cat.working_memory.history = memory_remove_last_turn(cat.working_memory.history)
         return {"output": "Ok I have removed the last turn"}
-
-    if cat.working_memory.user_message_json.text[:2] == ".kh":
-        turns_to_keep = int(cat.working_memory.user_message_json.text.split(" ")[1])
-
-        if turns_to_keep % 2 != 0:
-            return {"output": f"{turns_to_keep} is HUMAN turn, specify an AI turn"}
-
-        cat.working_memory.history = memory_keep_up_to_turn(
-            cat.working_memory.history, turns_to_keep
-        )
-
-        return formatted_chat_history(cat)
 
     if cat.working_memory.user_message_json.text == ".as":
         active_sessions = {}
@@ -227,20 +226,21 @@ Question was:
 **`Dot Commands`**
 ```
 ```
-*`History manipulation`*
-```text
-[.ph]     - Print chat History
-[.ch]     - Clear chat History
-[.rt]     - Remove last Turn
-[.kh nnn] - Keep chat History up to nnn turns
-[.sh]     - Save chat History (not implemented)
-[.lh]     - Load chat History (not implemented)
-```
 
 *`Quick resend`*
 ```text
 [.r]      - Resend the last question
 [.r nnn]  - Resend a specific HUMAN question
+```
+
+*`History manipulation`*
+```text
+[.ph]     - Print chat History
+[.rt]     - Remove last Turn
+[.ch]     - Clear chat History
+[.ch nnn] - Clear chat History after nnn
+[.sh]     - Save chat History (not implemented)
+[.lh]     - Load chat History (not implemented)
 ```
 
 *```"Why" of last answer```*
@@ -330,7 +330,7 @@ def resend(user_message_json, cat: StrayCat):
     question = cat.working_memory.history[index_of_question_to_resend]["message"]
 
     # Keep the history up to the answer to resend
-    turns_to_keep = index_of_question_to_resend
+    turns_to_keep = index_of_question_to_resend + 1
 
     # Keep the history up to the question to resend
     cat.working_memory.history = memory_keep_up_to_turn(
@@ -360,4 +360,4 @@ def memory_remove_last_turn(history):
 
 
 def memory_keep_up_to_turn(history, turns_to_keep):
-    return history[0:turns_to_keep]
+    return history[0 : turns_to_keep - 1]
