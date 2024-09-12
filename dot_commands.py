@@ -307,16 +307,20 @@ def before_cat_reads_message(user_message_json, cat: StrayCat):
 
     cat.working_memory.history = cleaned_history
 
-    # Exit if the prompt is not a resend command
-    if not user_message_json.text[:2] == ".r":
-        return
+    # Resend command
+    if user_message_json.text == ".r" or user_message_json.text[:3] == ".r ":
+        return resend(user_message_json, cat)
+
+
+# Resend the last human message:
+def resend(user_message_json, cat: StrayCat):
 
     # Question to resend has been specified?
     if len(user_message_json.text.split(" ")) > 1:
         # Question to resend has been specified
         question_to_resend = int(user_message_json.text.split(" ")[1])
     else:
-        # Question to resend has not been specified, resend the last answer
+        # Question to resend has not been specified, resend the last question
         question_to_resend = int(len(cat.working_memory.history) - 1)
 
     # The question index is 0 based however the user ask for question 1 based
@@ -331,6 +335,18 @@ def before_cat_reads_message(user_message_json, cat: StrayCat):
     # Keep the history up to the question to resend
     cat.working_memory.history = memory_keep_up_to_turn(
         cat.working_memory.history, turns_to_keep
+    )
+
+    # Inform the user of the replaced message
+    cat.send_chat_message(
+        f"""
+```
+Resending...
+
+```
+{question}
+""",
+        save=False,
     )
 
     # Replace the question
