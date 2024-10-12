@@ -1,8 +1,9 @@
 {
     "name": "Dot Commands",
     "version": "0.1.1",
-    "description": "Handy utility designed to simplify and speed up your plugin development process",
+    "description": "Handy utility designed to simplify and speed up your plugin development process. Install it, activate it, and send a message with just a period '.' in the chat",
     "author_name": "sambarza@gmail.com",
+    "author_url": "https://github.com/sambarza",
     "plugin_url": "https://github.com/sambarza/cc-dot-commands",
     "tags": "cat, internals, developers",
     "thumb": "https://raw.githubusercontent.com/my_repo_path/dot_commands.png"
