@@ -40,6 +40,13 @@ def print_help(cat: StrayCat):
 [.as]     - Print active sessions
 [.cs]     - Clear all sessions (cannot close ws sessions??)
 ```
+
+*`Cat internals`*
+```text
+[.ti]     - Thread Infos
+[.st nnn] - Sleep thread for nnn seconds (block thread event loop)
+```
+
 """
 
     return {"output": commands}

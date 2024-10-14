@@ -18,6 +18,9 @@ from .commands.print_current_user import *
 from .commands.print_active_sessions import *
 from .commands.clear_all_sessions import *
 
+from .commands.threads_info import *
+from .commands.sleep_thread import *
+
 from .utils import filter_dot_commands
 
 
@@ -72,6 +75,15 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
     if cat.working_memory.user_message_json.text == ".lp":
 
         return list_plugins(cat)
+
+    # Threads info
+    if cat.working_memory.user_message_json.text == ".ti":
+
+        return threads_info(cat)
+
+    if cat.working_memory.user_message_json.text[:4] == ".ts ":
+
+        return sleep_thread(cat)
 
     # Unknown dot command
     return {
