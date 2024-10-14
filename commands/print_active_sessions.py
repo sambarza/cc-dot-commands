@@ -1,5 +1,6 @@
 from cat.looking_glass.stray_cat import StrayCat
 
+from pympler import asizeof
 
 def print_active_sessions(cat: StrayCat):
 
@@ -14,16 +15,21 @@ def print_active_sessions(cat: StrayCat):
         session["session_id"] = session_id
         session["user"] = stray_cat.user_id
         session["history_length"] = len(stray_cat.working_memory.history)
+        session["working_memory_size"] = asizeof.asizeof(stray_cat.working_memory)
+        session["event_loop_id"] = id(stray_cat.loop)
 
         active_sessions["sessions"].append(session)
 
     output = f"""
+
+**`Active sessions`**
+
 ||||
 |-|-|-|
-|ID|User|History Length |
+|User ID|User Name|History Length|Working Memory Size (KB)|Event Loop ID
 """
     for session in active_sessions["sessions"]:
-        output += f"""|{session["session_id"]}|{session["user"]}|{session["history_length"]}|
+        output += f"""|{session["session_id"]}|{session["user"]}|{session["history_length"]}|{session["working_memory_size"]}|{session["event_loop_id"]}
 """
 
     return {"output": output}
