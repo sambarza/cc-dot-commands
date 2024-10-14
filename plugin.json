@@ -1,6 +1,6 @@
 {
     "name": "Dot Commands",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Handy utility designed to simplify and speed up your plugin development process. Install it, activate it, and send a message with just a period '.' in the chat",
     "author_name": "sambarza@gmail.com",
     "author_url": "https://github.com/sambarza",

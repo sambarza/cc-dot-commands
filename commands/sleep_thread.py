@@ -6,6 +6,8 @@ def sleep_thread(cat: StrayCat):
 
     sleep_time = int(cat.working_memory.user_message_json.text.split(" ")[1])
 
+    cat.send_chat_message(f"This thread will sleep for {sleep_time} seconds... *(using time.sleep() inside an hook)*", save=False)
+
     sleep(sleep_time)
 
-    return {"output": f"Slept for {sleep_time} seconds"}
+    return {"output": f"The thread slept for {sleep_time} seconds"}
