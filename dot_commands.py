@@ -81,7 +81,8 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
 
         return threads_info(cat)
 
-    if cat.working_memory.user_message_json.text[:4] == ".ts ":
+    # Sleep thread for nnn seconds
+    if cat.working_memory.user_message_json.text[:4] == ".st ":
 
         return sleep_thread(cat)
 
