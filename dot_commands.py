@@ -27,6 +27,10 @@ from .utils import filter_dot_commands
 @hook
 def agent_fast_reply(fast_reply, cat: StrayCat):
 
+    # Empty message
+    if len(cat.working_memory.user_message_json.text) == 0:
+        return
+
     # Not a dot command
     if cat.working_memory.user_message_json.text[0] != ".":
         return
