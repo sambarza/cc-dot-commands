@@ -16,7 +16,7 @@ def print_active_sessions(cat: StrayCat):
         session["user"] = stray_cat.user_id
         session["history_length"] = len(stray_cat.working_memory.history)
         session["working_memory_size"] = asizeof.asizeof(stray_cat.working_memory)
-        session["event_loop_id"] = id(stray_cat.loop)
+        session["event_loop_id"] = "main event loop" #id(stray_cat.loop)
 
         active_sessions["sessions"].append(session)
 

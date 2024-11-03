@@ -20,9 +20,9 @@ from .commands.clear_all_sessions import *
 
 from .commands.threads_info import *
 from .commands.sleep_thread import *
+from .commands.print_time import *
 
 from .utils import filter_dot_commands
-
 
 @hook
 def agent_fast_reply(fast_reply, cat: StrayCat):
@@ -33,7 +33,6 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
 
     # Print help
     if cat.working_memory.user_message_json.text == ".":
-
         return print_help(cat)
 
     # Print history
@@ -58,39 +57,36 @@ def agent_fast_reply(fast_reply, cat: StrayCat):
 
     # Clear all sessions
     if cat.working_memory.user_message_json.text == ".cs":
-
         return clear_all_sessions(cat)
 
     # Print why formatted
     if cat.working_memory.user_message_json.text == ".lw":
-
         return print_why_formatted(cat)
 
     # Print why raw
     if cat.working_memory.user_message_json.text == ".lwr":
-
         return print_why_raw(cat)
 
     # List plugins
     if cat.working_memory.user_message_json.text == ".lp":
-
         return list_plugins(cat)
 
     # Threads info
     if cat.working_memory.user_message_json.text == ".ti":
-
         return threads_info(cat)
 
     # Sleep thread for nnn seconds
     if cat.working_memory.user_message_json.text[:4] == ".st ":
+        return sleep_current_thread(cat)
 
-        return sleep_thread(cat)
+    # Start print time
+    if cat.working_memory.user_message_json.text[:4] == ".pt":
+        return start_print_time(cat)
 
     # Unknown dot command
     return {
         "output": f"Unknown dot command `'{cat.working_memory.user_message_json.text}'`"
     }
-
 
 @hook
 def before_cat_reads_message(user_message_json, cat: StrayCat):

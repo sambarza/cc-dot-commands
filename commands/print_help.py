@@ -43,8 +43,9 @@ def print_help(cat: StrayCat):
 
 *`Cat internals`*
 ```text
-[.ti]     - Thread Infos
-[.st nnn] - Sleep thread for nnn seconds (block thread event loop)
+[.ti]     - Threads Info
+[.st nnn] - Sleep current thread for nnn seconds (block thread event loop)
+[.pt]     - Start print time in main event loop
 ```
 
 """
