@@ -22,4 +22,4 @@ def start_print_time(cat: StrayCat):
     # we need the thread capacity limiter of the event loop running in the main event loop
     anyio.from_thread.run_sync(get_limiter)
 
-    return {"output": f"Now the current time will be print in the log each second (using the main event loop)"}
+    return {"output": f"Now the current time will be print in the log each 500ms (using the main event loop)"}
